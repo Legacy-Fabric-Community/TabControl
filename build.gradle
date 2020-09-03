@@ -29,6 +29,10 @@ repositories {
         name = 'legacy-fabric'
         url = 'https://dl.bintray.com/legacy-fabric/Legacy-Fabric-Maven'
     }
+    maven {
+        name = "SwiftPublicRepo"
+        url = uri("https://raw.githubusercontent.com/SwiftHQ/SwiftPublicRepo/master")
+    }
 }
 
 minecraft {
@@ -44,7 +48,9 @@ dependencies {
     modCompile ("net.fabricmc:fabric-loader-1.8.9:${project.loader_version}") {
         exclude module: "guava"
     }
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.3"
+
+    modImplementation("net.swifthq:SwiftAPI:1.7.1")
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.1"
 }
 
 processResources {

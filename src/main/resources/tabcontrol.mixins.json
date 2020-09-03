@@ -3,10 +3,7 @@
   "minVersion": "0.8",
   "package": "io.github.hydos.tabcontrol.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
   "server": [
-    "ExampleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

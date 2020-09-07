@@ -15,6 +15,8 @@ import net.fabricmc.fabric.api.server.PlayerStream;
 
 @Environment(EnvType.SERVER)
 public final class NetworkUtils {
+    public static int tps = 20;
+
     private NetworkUtils() {
     }
 
@@ -39,6 +41,8 @@ public final class NetworkUtils {
         text = text.replaceAll("\\$\\{var.gameVersion}", String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
         text = text.replaceAll("\\$\\{var.playerCount}", String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
         text = text.replaceAll("\\$\\{var.motd}", MinecraftServer.getServer().getMotd());
+        text = text.replaceAll("\\$\\{var.modname}", MinecraftServer.getServer().getServerModName());
+        text = text.replaceAll("\\$\\{var.tps}", String.valueOf(tps));
         return text;
     }
 }

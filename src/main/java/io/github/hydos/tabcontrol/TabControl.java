@@ -18,6 +18,8 @@ import com.mojang.serialization.DataResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.minecraft.server.MinecraftServer;
+
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,6 +35,7 @@ public class TabControl implements DedicatedServerModInitializer {
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDirectory().toPath().resolve("tabcontrol.json5");
     private static Config config;
     private static final Jankson JANKSON = Jankson.builder().build();
+    private static long lastTimeMillis = -1L;
 
     public void onInitializeServer() {
         LOGGER.info("Starting TabControl");
@@ -48,6 +51,14 @@ public class TabControl implements DedicatedServerModInitializer {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            long timeMillis = MinecraftServer.getTimeMillis();
+            if (!(lastTimeMillis == -1L)) {
+                long diff = timeMillis - lastTimeMillis;
+                if (diff > 60) {
+                    NetworkUtils.tps = Math.toIntExact((Math.round((1000.0/diff) * 100.0)) * 100L);
+                }
+            }
+            lastTimeMillis = timeMillis;
             if (config.shouldUpdateEveryTick()) {
                 NetworkUtils.sendToPlayers(server);
             }
@@ -57,9 +68,7 @@ public class TabControl implements DedicatedServerModInitializer {
     public static void reload() throws IOException, SyntaxError {
         if (!Files.exists(CONFIG_PATH)) {
             Files.createFile(CONFIG_PATH);
-            String x = "{\n" +
-                    "\t\"enabled\": false \n" +
-                    "}";
+            String x = "{\n\t\"enabled\": false \n}";
             Files.write(CONFIG_PATH, x.getBytes(StandardCharsets.UTF_8));
         }
         JsonObject object = JANKSON.load(CONFIG_PATH.toFile());

@@ -22,6 +22,7 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.registry.FabricCommandRegistry;
 import net.fabricmc.fabric.impl.command.CommandSide;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,6 +43,9 @@ public class TabControl implements DedicatedServerModInitializer {
 		}
 		FabricCommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
 		ServerLifecycleEvents.SERVER_STARTED.register(NetworkUtils::sendToPlayers);
+		ServerPlayerEvents.CONNECT.register((clientConnection, player) -> {
+			NetworkUtils.sendToPlayer(player);
+		});
 	}
 
 	public static void reload() throws IOException, SyntaxError {

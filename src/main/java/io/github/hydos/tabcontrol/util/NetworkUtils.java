@@ -19,12 +19,10 @@ public final class NetworkUtils {
     }
 
     public static void sendToPlayers(MinecraftServer server) {
-        PlayerStream.all(server).forEach((player) -> {
-            sendToPlayer(player, server);
-        });
+        PlayerStream.all(server).forEach(NetworkUtils::sendToPlayer);
     }
 
-    public static void sendToPlayer(ServerPlayerEntity player, MinecraftServer server) {
+    public static void sendToPlayer(ServerPlayerEntity player) {
         if (TabControl.getConfig().isEnabled()) {
             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, transform(new PlayerListHeaderS2CPacket()));
         }

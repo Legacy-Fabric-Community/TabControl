@@ -1,3 +1,4 @@
 # Commands
 command.tcreload.error=Error reloading config
 command.tcreload.usage=Reloads the config
+command.tcreload.success=Successfully reloaded the config

@@ -9,15 +9,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 @SuppressWarnings({"Convert2MethodRef", "CodeBlock2Expr"})
 public class Config {
     public static final Codec<Config> CODEC = RecordCodecBuilder.create((instance) -> {
-       return instance.group(Codec.BOOL.fieldOf("enabled").forGetter((config) -> {
-           return config.isEnabled();
-       }), Codec.list(Codec.STRING).optionalFieldOf("header", ImmutableList.of()).forGetter((config) -> {
-           return config.getHeader();
-       }), Codec.list(Codec.STRING).optionalFieldOf("footer", ImmutableList.of()).forGetter((config) -> {
-           return config.getFooter();
-       }), Codec.BOOL.optionalFieldOf("updateEveryTick", false).forGetter((config) -> {
-           return config.shouldUpdateEveryTick();
-       })).apply(instance, Config::new);
+        return instance.group(Codec.BOOL.fieldOf("enabled").forGetter((config) -> {
+            return config.isEnabled();
+        }), Codec.list(Codec.STRING).optionalFieldOf("header", ImmutableList.of()).forGetter((config) -> {
+            return config.getHeader();
+        }), Codec.list(Codec.STRING).optionalFieldOf("footer", ImmutableList.of()).forGetter((config) -> {
+            return config.getFooter();
+        }), Codec.BOOL.optionalFieldOf("updateEveryTick", false).forGetter((config) -> {
+            return config.shouldUpdateEveryTick();
+        })).apply(instance, Config::new);
     });
 
     private final boolean enabled;

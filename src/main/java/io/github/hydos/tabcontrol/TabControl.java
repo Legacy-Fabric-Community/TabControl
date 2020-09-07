@@ -29,45 +29,45 @@ import net.fabricmc.loader.api.FabricLoader;
 
 @Environment(EnvType.SERVER)
 public class TabControl implements DedicatedServerModInitializer {
-	public static final Logger LOGGER = LogManager.getLogger();
-	private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDirectory().toPath().resolve("tabcontrol.json5");
-	private static Config config;
-	private static final Jankson JANKSON = Jankson.builder().build();
+    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDirectory().toPath().resolve("tabcontrol.json5");
+    private static Config config;
+    private static final Jankson JANKSON = Jankson.builder().build();
 
-	public void onInitializeServer() {
-		LOGGER.info("Starting TabControl");
-		try {
-			reload();
-		} catch (IOException | SyntaxError e) {
-			throw new RuntimeException("Error loading TabControl config!", e);
-		}
-		FabricCommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
-		ServerPlayerEvents.CONNECT.register((clientConnection, player) -> {
-			if (!config.shouldUpdateEveryTick()){
-				NetworkUtils.sendToPlayer(player);
-			}
-		});
-		ServerTickEvents.END_SERVER_TICK.register((server) -> {
-			if (config.shouldUpdateEveryTick()) {
-				NetworkUtils.sendToPlayers(server);
-			}
-		});
-	}
+    public void onInitializeServer() {
+        LOGGER.info("Starting TabControl");
+        try {
+            reload();
+        } catch (IOException | SyntaxError e) {
+            throw new RuntimeException("Error loading TabControl config!", e);
+        }
+        FabricCommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
+        ServerPlayerEvents.CONNECT.register((clientConnection, player) -> {
+            if (!config.shouldUpdateEveryTick()) {
+                NetworkUtils.sendToPlayer(player);
+            }
+        });
+        ServerTickEvents.END_SERVER_TICK.register((server) -> {
+            if (config.shouldUpdateEveryTick()) {
+                NetworkUtils.sendToPlayers(server);
+            }
+        });
+    }
 
-	public static void reload() throws IOException, SyntaxError {
-		if (!Files.exists(CONFIG_PATH)) {
-			Files.createFile(CONFIG_PATH);
-			String x = "{\n" +
-					"\t\"enabled\": false \n" +
-					"}";
-			Files.write(CONFIG_PATH, x.getBytes(StandardCharsets.UTF_8));
-		}
-		JsonObject object = JANKSON.load(CONFIG_PATH.toFile());
-		DataResult<Pair<Config, JsonElement>> configDataResult = Config.CODEC.decode(JanksonOps.INSTANCE, object);
-		config = configDataResult.getOrThrow(false, System.err::println).getFirst();
-	}
+    public static void reload() throws IOException, SyntaxError {
+        if (!Files.exists(CONFIG_PATH)) {
+            Files.createFile(CONFIG_PATH);
+            String x = "{\n" +
+                    "\t\"enabled\": false \n" +
+                    "}";
+            Files.write(CONFIG_PATH, x.getBytes(StandardCharsets.UTF_8));
+        }
+        JsonObject object = JANKSON.load(CONFIG_PATH.toFile());
+        DataResult<Pair<Config, JsonElement>> configDataResult = Config.CODEC.decode(JanksonOps.INSTANCE, object);
+        config = configDataResult.getOrThrow(false, System.err::println).getFirst();
+    }
 
-	public static Config getConfig() {
-		return config;
-	}
+    public static Config getConfig() {
+        return config;
+    }
 }

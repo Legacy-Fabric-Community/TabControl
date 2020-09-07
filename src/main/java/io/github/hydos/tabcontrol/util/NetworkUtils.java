@@ -29,8 +29,16 @@ public final class NetworkUtils {
     }
 
     private static PlayerListHeaderS2CPacket transform(PlayerListHeaderS2CPacket packet) {
-        ((PlayerListHeaderS2CPacketAccessor) packet).setHeader(new LiteralText(String.join("\n", TabControl.getConfig().getHeader())));
-        ((PlayerListHeaderS2CPacketAccessor) packet).setFooter(new LiteralText(String.join("\n", TabControl.getConfig().getFooter())));
+        ((PlayerListHeaderS2CPacketAccessor) packet).setHeader(new LiteralText(format(String.join("\n", TabControl.getConfig().getHeader()))));
+        ((PlayerListHeaderS2CPacketAccessor) packet).setFooter(new LiteralText(format(String.join("\n", TabControl.getConfig().getFooter()))));
         return packet;
+    }
+
+    private static String format(String text) {
+        text = text.replaceAll("\\$\\{var.ip}", MinecraftServer.getServer().getServerIp());
+        text = text.replaceAll("\\$\\{var.gameVersion}", String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
+        text = text.replaceAll("\\$\\{var.playerCount}", String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
+        text = text.replaceAll("\\$\\{var.motd}", MinecraftServer.getServer().getMotd());
+        return text;
     }
 }

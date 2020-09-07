@@ -21,8 +21,8 @@ import org.apache.logging.log4j.Logger;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.registry.FabricCommandRegistry;
 import net.fabricmc.fabric.impl.command.CommandSide;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,9 +42,15 @@ public class TabControl implements DedicatedServerModInitializer {
 			throw new RuntimeException("Error loading TabControl config!", e);
 		}
 		FabricCommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
-		ServerLifecycleEvents.SERVER_STARTED.register(NetworkUtils::sendToPlayers);
 		ServerPlayerEvents.CONNECT.register((clientConnection, player) -> {
-			NetworkUtils.sendToPlayer(player);
+			if (!config.shouldUpdateEveryTick()){
+				NetworkUtils.sendToPlayer(player);
+			}
+		});
+		ServerTickEvents.END_SERVER_TICK.register((server) -> {
+			if (config.shouldUpdateEveryTick()) {
+				NetworkUtils.sendToPlayers(server);
+			}
 		});
 	}
 

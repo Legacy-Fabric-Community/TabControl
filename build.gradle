@@ -1,6 +1,7 @@
 plugins {
     id 'maven-publish'
     id 'fabric-loom' version "0.4-SNAPSHOT"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -41,16 +42,20 @@ minecraft {
     }
 }
 
+tasks.shadowJar.dependsOn tasks.remapJar
+
 dependencies {
-    compile "com.google.guava:guava:23.5-jre"
+    implementation "com.google.guava:guava:23.5-jre"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modCompile ("net.fabricmc:fabric-loader-1.8.9:${project.loader_version}") {
+    modImplementation ("net.fabricmc:fabric-loader-1.8.9:${project.loader_version}") {
         exclude module: "guava"
     }
 
     modImplementation("net.swifthq:SwiftAPI:1.7.1")
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.1"
+    implementation "com.mojang:datafixerupper:4.0.26"
+    shadow "com.mojang:datafixerupper:4.0.26"
 }
 
 processResources {
@@ -64,6 +69,11 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude "fabric.mod.json"
     }
+}
+
+shadowJar {
+    relocate 'com.mojang.serialization', 'io.github.hydos.tabcontrol.shadowed.datafixerupper.com.mojang.serialization'
+    relocate 'com.mojang.datafixers', 'io.github.hydos.tabcontrol.shadowed.datafixerupper.com.mojang.datafixers'
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is

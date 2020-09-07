@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.server.PlayerStream;
 
 @Environment(EnvType.SERVER)
 public final class NetworkUtils {
-    public static int tps = 20;
+    public static double tps = 20;
 
     private NetworkUtils() {
     }

@@ -55,7 +55,7 @@ public class TabControl implements DedicatedServerModInitializer {
             if (!(lastTimeMillis == -1L)) {
                 long diff = timeMillis - lastTimeMillis;
                 if (diff > 60) {
-                    NetworkUtils.tps = Math.toIntExact((Math.round((1000.0/diff) * 100.0)) * 100L);
+                    NetworkUtils.tps = Math.round((1000.0/diff) * 100.0) / 100.0;
                 }
             }
             lastTimeMillis = timeMillis;

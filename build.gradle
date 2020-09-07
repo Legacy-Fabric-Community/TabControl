@@ -33,6 +33,9 @@ repositories {
         name = "SwiftPublicRepo"
         url = uri("https://raw.githubusercontent.com/SwiftHQ/SwiftPublicRepo/master")
     }
+    maven {
+        url = 'https://dl.bintray.com/boogiemonster1o1/cool-mods/'
+    }
 }
 
 minecraft {
@@ -49,11 +52,9 @@ dependencies {
         exclude module: "guava"
     }
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.1"
-    implementation "com.mojang:datafixerupper:4.0.26"
-    include "com.mojang:datafixerupper:4.0.26"
-    implementation "blue.endless:jankson:1.1.0"
-    include "blue.endless:jankson:1.1.0"
-    include 'it.unimi.dsi:fastutil:7.1.0'
+    modImplementation("io.github.legacy-fabric-community:shadowedconfig:1.0.0") {
+        exclude module: 'fabric-api'
+    }
 }
 
 processResources {

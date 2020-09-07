@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "tabcontrol",
   "version": "${version}",
-
   "name": "Tab Control",
   "description": "Allows you to control the tab menu",
   "authors": [
@@ -10,7 +9,6 @@
   ],
   "license": "LGPL",
   "icon": "assets/tabcontrol/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "server": [
@@ -20,11 +18,7 @@
   "mixins": [
     "tabcontrol.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.7.4"
-  },
-  "suggests": {
-    "flamingo": "*"
   }
 }

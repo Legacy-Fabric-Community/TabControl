@@ -9,7 +9,7 @@
   ],
   "license": "LGPL",
   "icon": "assets/tabcontrol/icon.png",
-  "environment": "*",
+  "environment": "server",
   "entrypoints": {
     "server": [
       "io.github.hydos.tabcontrol.TabControl"

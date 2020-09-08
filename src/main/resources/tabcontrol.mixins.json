@@ -4,6 +4,7 @@
   "package": "io.github.hydos.tabcontrol.mixin",
   "compatibilityLevel": "JAVA_8",
   "server": [
+    "PlayerListHeaderS2CPacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

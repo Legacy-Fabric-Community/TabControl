@@ -12,7 +12,7 @@ import blue.endless.jankson.impl.SyntaxError;
 import io.github.hydos.tabcontrol.command.TCReloadCommand;
 import io.github.hydos.tabcontrol.config.Config;
 import io.github.hydos.tabcontrol.util.NetworkUtils;
-import io.github.legacy_fabric_community.serialization.JanksonOps;
+import io.github.legacy_fabric_community.serialization.json.JanksonOps;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import org.apache.logging.log4j.LogManager;

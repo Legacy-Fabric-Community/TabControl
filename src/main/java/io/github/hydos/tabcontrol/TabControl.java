@@ -43,11 +43,13 @@ public class TabControl implements DedicatedServerModInitializer {
         }
         CommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (config.isEnabled()) return;
             if (!config.shouldUpdateEveryTick()) {
                 NetworkUtils.sendToSender(sender);
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (config.isEnabled()) return;
             long timeMillis = MinecraftServer.getTimeMillis();
             if (!(lastTimeMillis == -1L)) {
                 long diff = timeMillis - lastTimeMillis;

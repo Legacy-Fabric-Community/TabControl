@@ -5,13 +5,12 @@ import io.github.hydos.tabcontrol.mixin.PlayerListHeaderS2CPacketAccessor;
 
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.fabric.api.server.PlayerStream;
+
+import net.legacyfabric.fabric.api.networking.v1.PacketSender;
 
 @Environment(EnvType.SERVER)
 public final class NetworkUtils {
@@ -20,14 +19,12 @@ public final class NetworkUtils {
     private NetworkUtils() {
     }
 
-    public static void sendToPlayers(MinecraftServer server) {
-        PlayerStream.all(server).forEach(NetworkUtils::sendToPlayer);
+    public static void sendToSender(PacketSender sender) {
+        sender.sendPacket(transform(new PlayerListHeaderS2CPacket()));
     }
 
-    public static void sendToPlayer(ServerPlayerEntity player) {
-        if (TabControl.getConfig().isEnabled()) {
-            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, transform(new PlayerListHeaderS2CPacket()));
-        }
+    public static void sendToPlayers(MinecraftServer server) {
+        server.getPlayerManager().sendToAll(transform(new PlayerListHeaderS2CPacket()));
     }
 
     private static PlayerListHeaderS2CPacket transform(PlayerListHeaderS2CPacket packet) {

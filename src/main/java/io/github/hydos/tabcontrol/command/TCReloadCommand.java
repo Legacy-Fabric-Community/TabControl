@@ -2,7 +2,6 @@ package io.github.hydos.tabcontrol.command;
 
 import java.io.IOException;
 
-import blue.endless.jankson.impl.SyntaxError;
 import io.github.hydos.tabcontrol.TabControl;
 
 import net.minecraft.command.AbstractCommand;
@@ -28,7 +27,7 @@ public class TCReloadCommand extends AbstractCommand {
     public void execute(CommandSource source, String[] args) throws CommandException {
         try {
             TabControl.reload();
-        } catch (IOException | SyntaxError e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new CommandException("command.tcreload.error");
         }

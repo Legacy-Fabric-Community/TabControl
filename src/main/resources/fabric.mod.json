@@ -5,7 +5,8 @@
   "name": "Tab Control",
   "description": "Allows you to control the tab menu",
   "authors": [
-    "hydos"
+    "hydos",
+    "BoogieMonster1O1"
   ],
   "license": "LGPL",
   "icon": "assets/tabcontrol/icon.png",
@@ -19,6 +20,7 @@
     "tabcontrol.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.4"
+    "fabricloader": ">=0.7.4",
+    "fabric": ">=1.0.0"
   }
 }

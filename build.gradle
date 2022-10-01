@@ -31,6 +31,7 @@ def lwjgl2 = !project.minecraft_version.startsWith("1.13")
 def currentOs = System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
 
 dependencies {
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.legacyfabric:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"

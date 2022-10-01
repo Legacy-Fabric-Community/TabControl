@@ -1,5 +1,10 @@
 package io.github.hydos.tabcontrol.util;
 
+import java.util.HashMap;
+import java.util.StringTokenizer;
+import java.util.function.Supplier;
+
+import com.google.common.collect.Iterators;
 import io.github.hydos.tabcontrol.TabControl;
 import io.github.hydos.tabcontrol.mixin.PlayerListHeaderS2CPacketAccessor;
 
@@ -12,9 +17,19 @@ import net.fabricmc.api.Environment;
 
 import net.legacyfabric.fabric.api.networking.v1.PacketSender;
 
-@Environment(EnvType.SERVER)
 public final class NetworkUtils {
     public static double tps = 20;
+
+    public static final HashMap<String, Supplier<String>> PLACEHOLDERS = new HashMap<>();
+
+    static {
+        PLACEHOLDERS.put("ip", () -> MinecraftServer.getServer().getServerIp());
+        PLACEHOLDERS.put("gameVersion", () -> String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
+        PLACEHOLDERS.put("playerCount", () -> String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
+        PLACEHOLDERS.put("motd", () -> MinecraftServer.getServer().getMotd());
+        PLACEHOLDERS.put("modname", () -> MinecraftServer.getServer().getServerModName());
+        PLACEHOLDERS.put("tps", () -> String.valueOf(tps));
+    }
 
     private NetworkUtils() {
     }
@@ -34,12 +49,11 @@ public final class NetworkUtils {
     }
 
     private static String format(String text) {
-        text = text.replaceAll("\\$\\{var.ip}", MinecraftServer.getServer().getServerIp());
-        text = text.replaceAll("\\$\\{var.gameVersion}", String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
-        text = text.replaceAll("\\$\\{var.playerCount}", String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
-        text = text.replaceAll("\\$\\{var.motd}", MinecraftServer.getServer().getMotd());
-        text = text.replaceAll("\\$\\{var.modname}", MinecraftServer.getServer().getServerModName());
-        text = text.replaceAll("\\$\\{var.tps}", String.valueOf(tps));
+        StringTokenizer tokens = new StringTokenizer(text, "$}", false);
+        while (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken();
+            System.out.println(token);
+        }
         return text;
     }
 }

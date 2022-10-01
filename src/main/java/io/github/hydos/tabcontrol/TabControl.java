@@ -1,13 +1,11 @@
 package io.github.hydos.tabcontrol;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import io.github.hydos.tabcontrol.command.TCReloadCommand;
 import io.github.hydos.tabcontrol.config.Config;
 import io.github.hydos.tabcontrol.util.NetworkUtils;
@@ -29,10 +27,12 @@ import net.legacyfabric.fabric.api.registry.CommandRegistry;
 @Environment(EnvType.SERVER)
 public class TabControl implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDirectory().toPath().resolve("tabcontrol.json5");
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("tabcontrol.json");
+    private static final Config DEFAULT_CONFIG = new Config();
     private static Config config;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static long lastTimeMillis = -1L;
+    private static long waitTicks = 0;
 
     public void onInitializeServer() {
         LOGGER.info("Starting TabControl");
@@ -43,10 +43,7 @@ public class TabControl implements DedicatedServerModInitializer {
         }
         CommandRegistry.INSTANCE.register(new TCReloadCommand(), CommandSide.DEDICATED);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            if (config.isEnabled()) return;
-            if (!config.shouldUpdateEveryTick()) {
-                NetworkUtils.sendToSender(sender);
-            }
+            NetworkUtils.sendToSender(sender);
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (config.isEnabled()) return;
@@ -58,8 +55,11 @@ public class TabControl implements DedicatedServerModInitializer {
                 }
             }
             lastTimeMillis = timeMillis;
-            if (config.shouldUpdateEveryTick()) {
+            if (waitTicks == 0) {
                 NetworkUtils.sendToPlayers(server);
+                waitTicks = config.getWaitTicks();
+            } else {
+                waitTicks--;
             }
         });
     }
@@ -67,11 +67,9 @@ public class TabControl implements DedicatedServerModInitializer {
     public static void reload() throws IOException {
         if (!Files.exists(CONFIG_PATH)) {
             Files.createFile(CONFIG_PATH);
-            String x = "{\n\t\"enabled\": false \n}";
-            Files.write(CONFIG_PATH, x.getBytes(StandardCharsets.UTF_8));
+            Files.write(CONFIG_PATH, GSON.toJson(DEFAULT_CONFIG).getBytes());
         }
-        JsonObject object = GSON.fromJson(Files.newBufferedReader(CONFIG_PATH), JsonObject.class);
-        config = Config.fromJson(object);
+        config = GSON.fromJson(Files.newBufferedReader(CONFIG_PATH), Config.class);
     }
 
     public static Config getConfig() {

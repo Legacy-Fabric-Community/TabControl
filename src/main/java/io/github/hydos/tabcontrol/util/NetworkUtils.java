@@ -1,5 +1,9 @@
 package io.github.hydos.tabcontrol.util;
 
+import java.util.HashMap;
+import java.util.StringTokenizer;
+import java.util.function.Supplier;
+
 import io.github.hydos.tabcontrol.TabControl;
 import io.github.hydos.tabcontrol.mixin.PlayerListHeaderS2CPacketAccessor;
 
@@ -7,14 +11,21 @@ import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.LiteralText;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import net.legacyfabric.fabric.api.networking.v1.PacketSender;
 
-@Environment(EnvType.SERVER)
 public final class NetworkUtils {
     public static double tps = 20;
+
+    public static final HashMap<String, Supplier<String>> SERVER_PLACEHOLDERS = new HashMap<>();
+
+    static {
+        SERVER_PLACEHOLDERS.put("ip", () -> MinecraftServer.getServer().getServerIp());
+        SERVER_PLACEHOLDERS.put("gameVersion", () -> String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
+        SERVER_PLACEHOLDERS.put("playerCount", () -> String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
+        SERVER_PLACEHOLDERS.put("motd", () -> MinecraftServer.getServer().getMotd());
+        SERVER_PLACEHOLDERS.put("modname", () -> MinecraftServer.getServer().getServerModName());
+        SERVER_PLACEHOLDERS.put("tps", () -> String.valueOf(tps));
+    }
 
     private NetworkUtils() {
     }
@@ -33,13 +44,29 @@ public final class NetworkUtils {
         return packet;
     }
 
-    private static String format(String text) {
-        text = text.replaceAll("\\$\\{var.ip}", MinecraftServer.getServer().getServerIp());
-        text = text.replaceAll("\\$\\{var.gameVersion}", String.valueOf(MinecraftServer.getServer().getServerMetadata().getVersion().getGameVersion()));
-        text = text.replaceAll("\\$\\{var.playerCount}", String.valueOf(MinecraftServer.getServer().getCurrentPlayerCount()));
-        text = text.replaceAll("\\$\\{var.motd}", MinecraftServer.getServer().getMotd());
-        text = text.replaceAll("\\$\\{var.modname}", MinecraftServer.getServer().getServerModName());
-        text = text.replaceAll("\\$\\{var.tps}", String.valueOf(tps));
-        return text;
+    public static String format(String text) {
+        StringTokenizer tokens = new StringTokenizer(text, "$}", false);
+        StringBuilder builder = new StringBuilder();
+        while (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken();
+            if (token.startsWith("{")) {
+                String key = token.substring(1);
+                StringTokenizer subTokens = new StringTokenizer(key, ".", false);
+                String subKey = subTokens.nextToken();
+                if (subKey.equals("server")) {
+                    String placeHolder = subTokens.nextToken();
+                    if (SERVER_PLACEHOLDERS.containsKey(placeHolder)) {
+                        builder.append(SERVER_PLACEHOLDERS.get(placeHolder).get());
+                    } else {
+                        builder.append("%INVALIDTOKEN%");
+                    }
+                } else {
+                    builder.append("%INVALIDTOKEN%");
+                }
+            } else {
+                builder.append(token);
+            }
+        }
+        return builder.toString();
     }
 }
